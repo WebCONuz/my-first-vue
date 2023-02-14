@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>18-19-dars. VueJS</title>
+    <!-- vue cdn -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <!-- tailwind css -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="./css/output.css" />
+    <!-- box-icons  -->
+    <link
+      href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
+      rel="stylesheet"
+    />
+    <!-- main css -->
+    <link rel="stylesheet" href="./css/styles.css" />
+  </head>
+  <body>
+    <!-- root section -->
+    <div id="root">
+      <header class="bg-green-600 w-full sticky top-0 left-0">
+        <div class="container">
+          <nav class="flex nav justify-between h-[70px] items-center">
+            <a href="#" class="text-white text-2xl font-semibold uppercase"
+              >Vue.js Bootcamp</a
+            >
+            <i class="bx bx-menu text-3xl text-white" @click="setToggle"></i>
+          </nav>
+        </div>
+      </header>
+
+      <main class="min-h-screen flex">
+        <aside
+          class="bg-white w-[15%] shadow-lg h-screen sticky top-[70px] left-0"
+          v-if="toggle"
+        >
+          <ul class="list">
+            <li
+              v-for="item in navLinks"
+              :key="item.id"
+              class="list__item bg-green-100 text-slate-800 font-semibold rounded-lg m-1 p-4 hover:bg-green-200 duration-150 cursor-pointer"
+            >
+              <a href="#" class="list__item--item">{{item.title}}</a>
+            </li>
+          </ul>
+        </aside>
+
+        <section class="main w-[85%] flex-grow bg-gray-100">
+          <div class="container">
+            <div
+              class="w-full shadow-2xl min-h-[400px] bg-white m-5 rounded-md p-5"
+            >
+              <div
+                v-show="!loading"
+                class="box w-[200px] h-[200px] flex justify-center items-center mx-auto"
+              >
+                <span class="loader"></span>
+              </div>
+              <ul class="list__posts">
+                <li
+                  class="bg-white shadow-xl p-4 rounded-xl border my-2 flex gap-x-3"
+                  v-for="(item, index) in postList"
+                >
+                  <span
+                    class="flex bg-sky-400 w-[28px] h-[28px] rounded-full justify-center items-center text-white text-sm"
+                  >
+                    {{index + 1}}
+                  </span>
+                  <p class="font-semibold">{{item.title}}</p>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="container">
+            <div class="w-full shadow-2xl bg-white m-5 rounded-md p-5">
+              <form action="#" @submit="addNewTask">
+                <label for="tasktitle">
+                  <p class="text-slate-800 mb-3 font-bold ml-28">
+                    Enter task title:
+                  </p>
+                  <input
+                    type="text"
+                    id="tasktitle"
+                    class="w-4/5 py-2 px-4 border focus:ring-2 focus:ring-green-300 focus:outline-none mx-auto block rounded-md mb-6"
+                    v-bind:value="taskName"
+                    @input="e=>taskName=e.target.value"
+                  />
+                </label>
+                <label for="deadLine">
+                  <p class="text-slate-800 mb-3 font-bold ml-28">
+                    Enter Task deadline:
+                  </p>
+                  <input
+                    type="date"
+                    id="deadLine"
+                    class="w-4/5 py-2 px-4 border focus:ring-2 focus:ring-green-300 focus:outline-none mx-auto block rounded-md mb-6"
+                    v-bind:value="deadLine"
+                    @input="e=>deadLine=e.target.value"
+                  />
+                </label>
+                <button
+                  class="bg-green-500 text-white uppercase font-bold py-2 px-4 mx-auto block w-4/5 text-lg rounded-md focus:ring-4 focus:ring-green-300"
+                >
+                  Add New Task
+                </button>
+              </form>
+            </div>
+
+            <div class="w-full shadow-2xl bg-white m-5 rounded-md p-5">
+              <ul v-if="tasks.length">
+                <li
+                  v-for="item in tasks"
+                  class="bg-green-200 rounded-md p-5 flex justify-between"
+                >
+                  <p class="text-lg">
+                    {{item.title}},
+                    <b class="ms-4 text-orange-400">{{item.date}}</b>
+                  </p>
+                  <div class="icons text-xl">
+                    <i class="bx bx-trash text-red-500"></i>
+                    <i class="bx bx-edit mx-2 text-blue-500"></i>
+                    <i class="bx bx-check-circle text-green-600"></i>
+                  </div>
+                </li>
+              </ul>
+              <ul v-else class="text-center text-orange-500 font-bold p-5">
+                Tasks Not Found
+              </ul>
+            </div>
+          </div>
+
+          <div class="container">
+            <div
+              class="w-full shadow-2xl bg-white m-5 rounded-md p-5 grid grid-cols-3 gap-4"
+            >
+              <h1
+                v-if="!users.length"
+                class="w-full text-center text-orange-500 uppercase font-semibold py-4"
+              >
+                Not found users
+              </h1>
+              <div
+                v-for="item in filterOffline"
+                class="card-item w-[300px] min-h-[400px] bg-white shadow-lg rounded-lg"
+              >
+                <img
+                  :src="item.avatar"
+                  alt="user-img"
+                  class="w-full object-cover rounded-t-lg"
+                />
+                <div class="card-item-body p-5">
+                  <h1 class="text-center font-bold text-xl uppercase">
+                    {{item.first_name}} {{item.last_name}}
+                  </h1>
+                  <h2 class="text-center font-medium">{{item.email}}</h2>
+                  <span
+                    :class="item.isOnline ? 'bg-green-500' : 'bg-orange-500'"
+                    class="block text-white font-semibold text-center p-2 shadow-lg rounded-lg mt-8"
+                  >
+                    {{`${item.isOnline ? "Online" : "Offline"}`}}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <footer class="bg-green-600 p-5">
+            <div class="container">
+              <p class="text-center text-white font-bold">
+                {{new Date().getFullYear()}}
+              </p>
+            </div>
+          </footer>
+        </section>
+      </main>
+    </div>
+
+    <!-- script files -->
+    <script src="./script/utils.js"></script>
+    <script src="./script/app.js"></script>
+  </body>
+</html>
